@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image-tree</title>
+
+  <link rel="stylesheet" type="text/css"
+    href="https://cdnjs.cloudflare.com/ajax/libs/cytoscape-panzoom/2.5.3/cytoscape.js-panzoom.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
+
+  <script src="https://unpkg.com/jquery@3.4.1/dist/jquery.min.js"></script>
+  <script src="https://unpkg.com/cytoscape@3.8.1/dist/cytoscape.min.js"></script>
+  <script src="https://unpkg.com/numeric@1.2.6/numeric-1.2.6.js"></script>
+  <script src="https://unpkg.com/layout-base@1.0.1/layout-base.js"></script>
+  <script src="https://unpkg.com/cose-base@1.0.0/cose-base.js"></script>
+  <script src="https://unpkg.com/cytoscape-fcose@1.0.0/cytoscape-fcose.js"></script>
+  <script src="https://unpkg.com/cytoscape-panzoom@2.5.3/cytoscape-panzoom.js"></script>
+
+  <style>
+    body {
+      font-size: 10px;
+    }
+
+    #IdCytoscape {
+      position: absolute;
+      width: 98%;
+      height: 90%;
+      z-index: 999;
+      background-color: #e9e9e9;
+    }
+  </style>
+  <script>
+    var CytLayout = (function () {
+      var _setLayout = function (cy, layoutName) {
+        var layout = {
+          name: layoutName,
+          fit: true,
+          animate: true
+        };
+        cy.layout(layout).run();
+        return layout;
+      };
+      return {
+        setLeyout: _setLayout
+      };
+    })();
+
+    document.addEventListener("DOMContentLoaded", function () {
+        $.ajax({
+          url: "/_data",
+          type: "GET",
+          dataType: "json",
+        }).done(function(json, textStatus, jqXHR) {
+          var setStyles = function (nodes, edges) {
+            nodes.forEach(function (node) {
+              var data = node.json().data;
+              if (data.type == 'image') {
+                node.css("width", "label");
+                node.css("height", "label");
+                node.css("padding", "20px");
+                node.css("content", data.name || data.id);
+                node.css("text-justification", "left")
+                node.css("text-valign", "center");
+                node.css("text-halign", "center");
+                node.css("text-wrap", "wrap");
+                node.css("shape", "round-rectangle");
+                node.css("background-color", "#ffcb4f");
+              } else if (data.type == 'container') {
+                node.css("width", "label");
+                node.css("height", "label");
+                node.css("padding", "20px");
+                node.css("content", data.name || data.id);
+                node.css("text-justification", "left")
+                node.css("text-valign", "center");
+                node.css("text-halign", "center");
+                node.css("text-wrap", "wrap");
+                node.css("shape", "round-rectangle");
+                node.css("background-color", "#B2EDCE");
+              }
+            });
+            edges.forEach(function (edge) {
+              var data = edge.json().data;
+    //          edge.css("curve-style", "taxi");
+    //          edge.css("curve-style", "unbundled-bezier");
+              edge.css("curve-style", "bezier");
+              edge.css("target-arrow-shape", "triangle");
+            });
+          };
+    
+          var cy = cytoscape({
+            container: $("#IdCytoscape"),
+            ready: function () {
+              setStyles(this.nodes(), this.edges());
+            },
+            elements: json,
+          });
+          // パン、ズームイン／ズームアウトコントロールの配置
+          cy.panzoom({});
+          CytLayout.setLeyout(cy, 'fcose');
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <h1>Image tree</h1>
+  <div id="IdCytoscape"></div>
+</body>
+
+</html>
