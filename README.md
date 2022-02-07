@@ -15,7 +15,7 @@ Simply copy docker-graph command to docker host.
 
 $ ./docker-graph
 
-access from browser http://<server>:9091
+access from browser http://SERVER-IP:9091/
 
 Caution!: There are no access restrictions. It must not to use production.
   
